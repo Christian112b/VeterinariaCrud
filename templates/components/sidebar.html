@@ -4,19 +4,19 @@
     <ul>
 
         <li class="has-subnav">
-            <a href="#">
-                <i class="fa fa-globe fa-2x"></i>
+            <a href="{{ url_for('home') }}">
+                <i class="fa fa-home fa-2x"></i>
                 <span class="nav-text">
-                    Calendario de Citas
+                    Inicio
                 </span>
             </a>
 
         </li>
         <li class="has-subnav">
-            <a href="#">
-                <i class="fa fa-comments fa-2x"></i>
+            <a href="{{ url_for('pets') }}">
+                <i class="fa fa-table fa-2x"></i>
                 <span class="nav-text">
-                    Mascotas Registradas
+                    Mascotas 
                 </span>
             </a>
 
@@ -26,10 +26,10 @@
 
     <ul class="logout">
         <li>
-            <a href="#">
+            <a href="{{ url_for('logout') }}">
                 <i class="fa fa-power-off fa-2x"></i>
                 <span class="nav-text">
-                    Logout
+                    Cerrar Sesion
                 </span>
             </a>
         </li>

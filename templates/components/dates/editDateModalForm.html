@@ -1,0 +1,45 @@
+<div>
+    <div class="modal fade" id="editDateModal" tabindex="-1" role="dialog" aria-labelledby="editDateModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editDateModalLabel">Editar Cita</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form method="POST" id="editDateForm" action="{{ url_for('edit_date') }}">
+                    <div class="modal-body">
+                        <!-- Campo oculto para el ID de la cita -->
+                        <input type="hidden" id="idCita" name="idCita">
+                        <div class="form-group">
+                            <label for="idMascota">Nombre de la Mascota</label>
+                            <select class="form-control" id="idMascota" name="idMascota" required>
+                                <option value="">Selecciona una mascota</option>
+                                {% for mascota in mascotas %}
+                                    <option value="{{ mascota[0] }}">{{ mascota[0] }} - {{ mascota[1] }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="fechaCita">Fecha</label>
+                            <input type="date" class="form-control" id="fechaCita" name="fechaCita" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="horaCita">Hora</label>
+                            <input type="time" class="form-control" id="horaCita" name="horaCita" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="motivoCita">Motivo</label>
+                            <input type="text" class="form-control" id="motivoCita" name="motivoCita" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

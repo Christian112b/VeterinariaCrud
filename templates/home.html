@@ -1,6 +1,7 @@
 {% include 'components/sidebar.html' %}
-{% include 'components/registerModalForm.html' %}
-{% include 'components/addDateModalForm.html' %}
+{% include 'components/pets/registerModalForm.html' %}
+{% include 'components/dates/addDateModalForm.html' %}
+{% include 'components/dates/editDateModalForm.html' %}
 
 
 
@@ -80,9 +81,11 @@
 </script>
 
 <script>
+let calendar;
+
 document.addEventListener('DOMContentLoaded', function () {
     var calendarEl = document.getElementById('calendar');
-    var calendar = new FullCalendar.Calendar(calendarEl, {
+    calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
         locale: 'es',
         headerToolbar: {
@@ -122,7 +125,7 @@ document.addEventListener('DOMContentLoaded', function () {
     $('#show-cita-btn').click(function () {
         mostrandoTabla = !mostrandoTabla;
         if (mostrandoTabla) {
-            $('#calendar').hide();
+            $('#calendar-row').hide();
             $('#tabla-citas').show();
             $(this).text('Ver calendario');
             if (citasCache.length === 0) {
@@ -137,8 +140,9 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         } else {
             $('#tabla-citas').hide();
-            $('#calendar').show();
+            $('#calendar-row').show();
             $(this).text('Ver registro de citas');
+            calendar.updateSize()
         }
     });
 
@@ -155,27 +159,72 @@ document.addEventListener('DOMContentLoaded', function () {
             tbody.append(
                 `<tr>
                 <td>${cita.id || ''}</td>
-                <td>${mascota}</td>
+                <td>${mascota}</td>s
                 <td>${fecha}</td>
                 <td>${hora}</td>
                 <td>${motivo}</td>
                 <td>
-                    <button class="btn btn-sm btn-warning btn-editar" data-idx="${idx}">Editar</button>
-                    <button class="btn btn-sm btn-danger btn-eliminar" data-idx="${idx}">Eliminar</button>
+                    <button class="btn btn-sm btn-warning btn-editar" data-id="${cita.id}">Editar</button>
+                    <button class="btn btn-sm btn-danger btn-eliminar" data-id="${cita.id}">Eliminar</button>
                 </td>
             </tr>`
             );
         });
 
         // Eventos para los botones
-        $('.btn-eliminar').click(function () {
-            let idx = $(this).data('idx');
-            alert('Eliminar cita: ' + idx);
+            $('.btn-eliminar').click(function () {
+            let id = $(this).data('id');
+            if (confirm('¿Seguro que deseas eliminar esta cita?')) {
+                fetch(`/api/citas/${id}`, { method: 'DELETE' })
+                    .then(response => {
+                        if (response.ok) {
+                            // Elimina la cita del cache y recarga la tabla
+                            citasCache = citasCache.filter(c => c.id !== id);
+                            llenarTablaCitas(citasCache);
+                            calendar.refetchEvents();
+                        } else {
+                            alert('No se pudo eliminar la cita.');
+                        }
+                    });
+            }
         });
 
         $('.btn-editar').click(function () {
-            let idx = $(this).data('idx');
-            alert('Editar cita: ' + idx);
+            let id = $(this).data('id');
+            let cita = citasCache.find(c => c.id == id);
+            if (!cita) {
+                alert('Cita no encontrada.');
+                return;
+            }
+
+            fetch(`/api/getcitas/${id}`)
+                .then(response => response.json())
+                .then(cita => {
+
+                    // Llenar el formulario de edición
+                    llenarFormularioEdicion(cita);
+                });
+
+
+            // Abre el modal
+            $('#editDateModal').modal('show');
         });
     }
+
+function llenarFormularioEdicion(data) {
+    var inputs = document.querySelectorAll('#editDateForm .form-group input, #editDateForm .form-group select');
+
+    for(var i = 0; i < inputs.length; i++) {
+        var input = inputs[i];
+        var value = data[i];
+
+        if (input.tagName === 'SELECT') {
+            input.value = value
+        } else {
+            input.value = value
+        }
+    
+    };
+}
+
 </script>

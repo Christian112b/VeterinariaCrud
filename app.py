@@ -1,21 +1,23 @@
 import os
 
-from functions.sqliteFunctions import agregar_veterinario, checar_veterinario, agregar_mascota, obtener_mascotas, agregar_cita, obtener_citas
+from functions.sqliteFunctions import *
 
-from datetime import datetime, date
+from datetime import timedelta, date
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
-# app.permanent_session_lifetime = timedelta(minutes=15)
+app.permanent_session_lifetime = timedelta(minutes=15)
 
-# @app.before_request
-# def renovar_sesion():
-#     session.permanent = True    
+@app.before_request
+def renovar_sesion():
+    session.permanent = True    
 
 @app.route('/')
 def index():
     return render_template('login.html')
+
+# ---- Login Functions ----
 
 @app.route('/check_user', methods=['POST'])
 def check_user():
@@ -51,19 +53,8 @@ def register_user():
     # Redirigir a la página de inicio de sesión
     return render_template('login.html', mensaje="Usuario registrado con éxito. Por favor, inicie sesión.")
 
-@app.route('/register_pet', methods=['POST'])
-def register_pet():
-    nombre = request.form['nombreMascota']
-    especie = request.form['especieMascota']
-    raza = request.form['razaMascota']
-    edad = request.form['edadMascota']
-    color = request.form['colorMascota']
-    fecha = date.today().strftime('%Y-%m-%d')
 
-    agregar_mascota(nombre, especie, raza, edad, color, fecha)
-
-    return redirect(url_for('home'))
-
+# --- Dates Functions ---
 @app.route('/register_date', methods=['POST'])
 def register_date():
     id_mascota = request.form['idMascota']
@@ -81,11 +72,85 @@ def api_citas():
     citas = obtener_citas()
     return jsonify(citas)
 
+@app.route('/api/citas/<int:id>', methods=['DELETE'])
+def eliminar_cita(id):
+    eliminar_cita(id)
+    return '', 204
+
+@app.route('/api/getcitas/<int:id>', methods=['GET'])
+def getCita(id):
+    cita = obtener_cita(int(id))
+    session['idCita'] = id
+    return jsonify(cita)
+
+@app.route('/edit_date', methods=['POST'])
+def edit_date():
+    
+    id_cita = session['idCita']
+    id_mascota = request.form['idMascota']
+    id_vet = session['vetId']
+    fecha = request.form['fechaCita']
+    hora = request.form['horaCita']
+    motivo = request.form['motivoCita']
+
+    session.pop('idCita', None)
+
+    editar_cita(id_cita, id_mascota, fecha, hora, motivo)
+
+    return redirect(url_for('home'))
+
+# --- Pets Functions ---
+
+@app.route('/pets')
+def pets():
+    if 'username' not in session:
+        return redirect(url_for('index'))
+
+    # Obtener la lista de mascotas
+    mascotas = obtener_data_mascotas()
+    return render_template('petCrud.html', mascotas=mascotas)
+
+@app.route('/register_pet', methods=['POST'])
+def register_pet():
+    nombre = request.form['nombreMascota']
+    especie = request.form['especieMascota']
+    raza = request.form['razaMascota']
+    edad = request.form['edadMascota']
+    color = request.form['colorMascota']
+    fecha = date.today().strftime('%Y-%m-%d')
+
+    agregar_mascota(nombre, especie, raza, edad, color, fecha)
+
+    return redirect(url_for('home'))
+
+@app.route('/api/mascotas/<int:id>', methods=['DELETE'])
+def delete_pet(id):
+    eliminar_mascota(id)
+    return '', 204
+
+@app.route('/api/mascotas/<int:id>', methods=['PUT'])
+def edit_pet(id):
+    data = request.get_json()
+    editar_mascota(id, data)
+    return '', 204
+
+
+
 @app.route('/home')
 def home():
+
+    if 'username' not in session:
+        return redirect(url_for('index'))
+
     mascotas = obtener_mascotas()  # Retornar una lista de tuplas (id, nombre)
     
     return render_template('home.html', mascotas=mascotas)
+
+@app.route('/logout')
+def logout():
+    session.pop('username', None)
+    session.pop('vetId', None)
+    return redirect(url_for('index'))
 
 
 if __name__ == '__main__':

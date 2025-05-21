@@ -1,0 +1,122 @@
+{% include 'components/sidebar.html' %}
+{% include 'components/pets/editModalForm.html' %}
+{% include 'components/pets/registerModalForm.html' %}
+
+
+
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/homeStyles.css') }}">
+
+<!-- Boostrap Library -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<div class="main-content">
+    <h1>Registros de Mascotas </h1>
+
+    <div class="menu">
+        <div class="buttonsMenu">
+            <button class="btn btn-success" id="add-pet-btn">Registra nueva mascota</button>
+        </div>
+
+        <div class="tablaMascotas">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Especie</th>
+                        <th>Raza</th>
+                        <th>Edad</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla-mascotas-body">
+                    {% for mascota in mascotas %}
+                    <tr>
+                        <td>{{ mascota[0] }}</td>
+                        <td>{{ mascota[1] }}</td>
+                        <td>{{ mascota[2] }}</td>
+                        <td>{{ mascota[3] }}</td>
+                        <td>{{ mascota[4] }}</td>
+                        <td>
+                            <button class="btn btn-warning btn-sm btn-editar" data-id="{{ mascota[0] }}">Editar</button>
+                            <button class="btn btn-danger btn-sm btn-eliminar"
+                                data-id="{{ mascota[0] }}">Eliminar</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+
+$('#add-pet-btn').click(function() {
+    $('#registerModal').modal('show');
+});
+
+$(document).ready(function() {
+    $('.btn-eliminar').click(function () {
+        let id = $(this).data('id');
+        if (confirm('¿Seguro que deseas eliminar esta mascota?')) {
+            fetch(`/api/mascotas/${id}`, { method: 'DELETE' })
+                .then(response => {
+                    if (response.ok) {
+                        // Elimina la fila de la tabla sin recargar la página
+                        $(this).closest('tr').remove();
+                    } else {
+                        alert('No se pudo eliminar la mascota.');
+                    }
+                });
+        }
+    });
+    $('.btn-editar').click(function () {
+        // Obtén la fila y los datos de la mascota
+        let fila = $(this).closest('tr');
+        let id = $(this).data('id');
+        let nombre = fila.find('td').eq(1).text();
+        let especie = fila.find('td').eq(2).text();
+        let raza = fila.find('td').eq(3).text();
+        let edad = fila.find('td').eq(4).text();
+
+        // Llena el formulario del modal
+        $('#editPetId').val(id);
+        $('#editPetNombre').val(nombre);
+        $('#editPetEspecie').val(especie);
+        $('#editPetRaza').val(raza);
+        $('#editPetEdad').val(edad);
+
+        // Abre el modal
+        $('#editPetModal').modal('show');
+    });
+
+    // Maneja el submit del formulario de edición
+    $('#editPetForm').submit(function(e) {
+        e.preventDefault();
+        let id = $('#editPetId').val();
+        let data = {
+            nombre: $('#editPetNombre').val(),
+            especie: $('#editPetEspecie').val(),
+            raza: $('#editPetRaza').val(),
+            edad: $('#editPetEdad').val()
+        };
+        fetch(`/api/mascotas/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        })
+        .then(response => {
+            if (response.ok) {
+                // Actualiza la fila en la tabla (opcional: recarga la página)
+                location.reload();
+            } else {
+                alert('No se pudo editar la mascota.');
+            }
+        });
+    });
+});
+</script>
+

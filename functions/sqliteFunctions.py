@@ -43,6 +43,14 @@ def obtener_mascotas():
     conexion.close()
     return mascotas
 
+def obtener_data_mascotas():
+    conexion = sqlite3.connect(database)
+    cursor = conexion.cursor()
+    cursor.execute('SELECT * FROM mascotas')
+    mascotas = cursor.fetchall()
+    conexion.close()
+    return mascotas
+
 def crear_citas():
     conexion = sqlite3.connect(database)
     cursor = conexion.cursor()
@@ -137,3 +145,51 @@ def checar_veterinario(username, password):
         return None
     else:
         return veterinario    
+
+
+# --- Operaciones CRUD para Mascotas ---
+
+def eliminar_mascota(id):
+
+    conexion = sqlite3.connect(database)
+    cursor = conexion.cursor()
+    cursor.execute('DELETE FROM mascotas WHERE id = ?', (id,))
+    conexion.commit()
+    conexion.close()
+
+def editar_mascota(id, data):
+    conexion = sqlite3.connect(database)
+    cursor = conexion.cursor()
+    cursor.execute('UPDATE mascotas SET nombre=?, especie=?, raza=?, edad=? WHERE id=?',
+                   (data['nombre'], data['especie'], data['raza'], data['edad'], id))
+    conexion.commit()
+    conexion.close()
+
+
+# --- Operaciones CRUD para Citas ---
+def eliminar_cita(id):
+    conexion = sqlite3.connect(database)
+    cursor = conexion.cursor()
+    cursor.execute('DELETE FROM citas WHERE id = ?', (id,))
+    conexion.commit()
+    conexion.close()
+
+def obtener_cita(id):
+    conexion = sqlite3.connect(database)
+    cursor = conexion.cursor()
+    cursor.execute('SELECT id_mascota, fecha, hora, motivo FROM citas WHERE id = ?', (id,))
+    cita = cursor.fetchone()
+    conexion.close()
+    return cita
+
+def editar_cita(id, id_mascota, fecha, hora, motivo):
+    conexion = sqlite3.connect(database)
+    cursor = conexion.cursor()
+    cursor.execute('''
+        UPDATE citas
+        SET id_mascota = ?, fecha = ?, hora = ?, motivo = ?
+        WHERE id = ?
+    ''', (id_mascota, fecha, hora, motivo, id))
+    conexion.commit()
+    conexion.close()
+

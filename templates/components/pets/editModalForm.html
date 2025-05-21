@@ -1,0 +1,38 @@
+<!-- Modal para editar mascota -->
+<div class="modal fade" id="editPetModal" tabindex="-1" role="dialog" aria-labelledby="editPetModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <form id="editPetForm" method="POST">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editPetModalLabel">Editar Mascota</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="editPetId" name="id">
+          <div class="form-group">
+            <label for="editPetNombre">Nombre</label>
+            <input type="text" class="form-control" id="editPetNombre" name="nombre" required>
+          </div>
+          <div class="form-group">
+            <label for="editPetEspecie">Especie</label>
+            <input type="text" class="form-control" id="editPetEspecie" name="especie" required>
+          </div>
+          <div class="form-group">
+            <label for="editPetRaza">Raza</label>
+            <input type="text" class="form-control" id="editPetRaza" name="raza" required>
+          </div>
+          <div class="form-group">
+            <label for="editPetEdad">Edad</label>
+            <input type="number" class="form-control" id="editPetEdad" name="edad" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
