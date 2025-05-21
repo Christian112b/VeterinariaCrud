@@ -1,0 +1,47 @@
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/loginStyles.css') }}">
+
+{% if mensaje %}
+<script>
+    alert("{{ mensaje }}");
+</script>
+{% endif %}
+
+<div class="container" id="container">
+	<div class="form-container sign-up-container">
+		<form method="POST" action="{{ url_for('register_user') }}">
+			<h1>Crea una cuenta</h1>
+			<input type="text" placeholder="Nombre" name="nameVet" required/>
+			<input type="text" placeholder="Apellidos" name="apeVet" required/>
+			<input type="text" placeholder="Especialidad" name="especialidad" required/>
+			<input type="password" placeholder="Contraseña" name="password" required/>
+
+			<button>Enviar</button>
+		</form>
+	</div>
+	<div class="form-container sign-in-container">
+		<form method="POST" action="{{ url_for('check_user') }}">
+
+			<h1>Inicia Sesion</h1>
+
+			<input type="text" placeholder="Usuario" name="username" required>
+			<input type="password" placeholder="Contraseña" name="password" required/>
+			<button>Enviar</button>
+		</form>
+	</div>
+	<div class="overlay-container">
+		<div class="overlay">
+			<div class="overlay-panel overlay-left">
+				<h1>Bienvenido de vuelta!</h1>
+				<p>Para mantenerte en contacto con nosotros, inicia sesión con tus datos</p>
+				<button class="ghost" id="signIn">Iniciar Sesion</button>
+			</div>
+			<div class="overlay-panel overlay-right">
+				<h1>Hola, Amigo Veterinario!</h1>
+				<p>Agrega tus datos de veterinario y comienza tu experiencia con nosotros</p>
+				<button class="ghost" id="signUp">Registrarse</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script src="{{ url_for('static', filename='scripts/loginScript.js') }}"></script>

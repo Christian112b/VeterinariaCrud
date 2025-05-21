@@ -1,0 +1,181 @@
+{% include 'components/sidebar.html' %}
+{% include 'components/registerModalForm.html' %}
+{% include 'components/addDateModalForm.html' %}
+
+
+
+
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/homeStyles.css') }}">
+
+<!-- Boostrap Library -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<!-- FullCalendar CSS -->
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet" />
+<!-- FullCalendar JS -->
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+
+<div class="main-content">
+    <h1>Bienvenido {{ session['username'] }}</h1>
+
+    <div class="menu">
+        <h2>Menu Rapido</h2>
+        <div class="buttonsMenu">
+            <button class="btn btn-success" id="add-pet-btn">Registra nueva mascota</button>
+            <button class="btn btn-warning" id="add-cita-btn">Agregar cita</button>
+            <button class="btn btn-secondary" id="show-cita-btn">Ver registro de citas</button>
+        </div>
+    </div>
+
+    <div id="calendar-row" style="display: flex;">
+        <div class="calendar" style="flex:1;">
+            <div id="calendar"></div>
+        </div>
+        <div class="side-panel">
+            <div id="detalle-cita">
+                <p>Selecciona una cita en el calendario para ver detalles aquí.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla de citas fuera del contenedor flex -->
+    <div id="tabla-citas" style="display:none; margin-top:20px;">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Mascota</th>
+                    <th>Fecha</th>
+                    <th>Hora</th>
+                    <th>Motivo</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="tabla-citas-body">
+                <!-- Las filas se llenan con JS -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        $('#add-pet-btn').click(function () {
+            $('#registerModal').modal('show');
+        });
+    });
+
+    $(document).ready(function () {
+        $('#add-cita-btn').click(function () {
+            $('#addDateModal').modal('show');
+        });
+    });
+
+
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var calendarEl = document.getElementById('calendar');
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        locale: 'es',
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+        },
+        events: function (fetchInfo, successCallback, failureCallback) {
+            fetch('/api/citas')
+                .then(response => response.json())
+                .then(data => successCallback(data))
+                .catch(error => failureCallback(error));
+        },
+        eventClick: function(info) {
+            // info.event contiene los datos del evento
+            let title = info.event.title;
+            let start = info.event.start;
+            let fecha = start.toLocaleDateString();
+            let hora = start.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            let detalleHtml = `
+                <h5>Detalle de la cita</h5>
+                <p><strong>Mascota y motivo:</strong> ${title}</p>
+                <p><strong>Fecha:</strong> ${fecha}</p>
+                <p><strong>Hora:</strong> ${hora}</p>
+            `;
+            document.getElementById('detalle-cita').innerHTML = detalleHtml;
+        }
+    });
+    calendar.render();
+});
+</script>
+
+<script>
+    let mostrandoTabla = false;
+    let citasCache = [];
+
+    $('#show-cita-btn').click(function () {
+        mostrandoTabla = !mostrandoTabla;
+        if (mostrandoTabla) {
+            $('#calendar').hide();
+            $('#tabla-citas').show();
+            $(this).text('Ver calendario');
+            if (citasCache.length === 0) {
+                fetch('/api/citas')
+                    .then(response => response.json())
+                    .then(data => {
+                        citasCache = data;
+                        llenarTablaCitas(data);
+                    });
+            } else {
+                llenarTablaCitas(citasCache);
+            }
+        } else {
+            $('#tabla-citas').hide();
+            $('#calendar').show();
+            $(this).text('Ver registro de citas');
+        }
+    });
+
+    function llenarTablaCitas(citas) {
+        let tbody = $('#tabla-citas-body');
+        tbody.empty();
+        citas.forEach(function (cita, idx) {
+
+            let mascota = cita.title.split(' - ')[0];
+            let motivo = cita.title.split(' - ')[1] || '';
+            let fechaHora = cita.start.split('T');
+            let fecha = fechaHora[0];
+            let hora = fechaHora[1] || '';
+            tbody.append(
+                `<tr>
+                <td>${cita.id || ''}</td>
+                <td>${mascota}</td>
+                <td>${fecha}</td>
+                <td>${hora}</td>
+                <td>${motivo}</td>
+                <td>
+                    <button class="btn btn-sm btn-warning btn-editar" data-idx="${idx}">Editar</button>
+                    <button class="btn btn-sm btn-danger btn-eliminar" data-idx="${idx}">Eliminar</button>
+                </td>
+            </tr>`
+            );
+        });
+
+        // Eventos para los botones
+        $('.btn-eliminar').click(function () {
+            let idx = $(this).data('idx');
+            alert('Eliminar cita: ' + idx);
+        });
+
+        $('.btn-editar').click(function () {
+            let idx = $(this).data('idx');
+            alert('Editar cita: ' + idx);
+        });
+    }
+</script>
