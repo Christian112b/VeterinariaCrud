@@ -51,7 +51,7 @@ def register_user():
     agregar_veterinario(nombre, apellidos, especialidad, username, clave)
 
     # Redirigir a la página de inicio de sesión
-    return render_template('login.html', mensaje="Usuario registrado con éxito. Por favor, inicie sesión.")
+    return render_template('login.html', mensaje="Usuario registrado con éxito. Por favor, inicie sesión.", username=username, password=clave)
 
 
 # --- Dates Functions ---
@@ -73,7 +73,7 @@ def api_citas():
     return jsonify(citas)
 
 @app.route('/api/citas/<int:id>', methods=['DELETE'])
-def eliminar_cita(id):
+def remove_pet(id):
     eliminar_cita(id)
     return '', 204
 
@@ -119,7 +119,7 @@ def register_pet():
     color = request.form['colorMascota']
     fecha = date.today().strftime('%Y-%m-%d')
 
-    agregar_mascota(nombre, especie, raza, edad, color, fecha)
+    agregar_mascota(nombre, especie, raza, edad, color, fecha, session['vetId'])
 
     return redirect(url_for('home'))
 
@@ -142,7 +142,7 @@ def home():
     if 'username' not in session:
         return redirect(url_for('index'))
 
-    mascotas = obtener_mascotas()  # Retornar una lista de tuplas (id, nombre)
+    mascotas = obtener_mascotas(int(session['vetId']))  # Retornar una lista de tuplas (id, nombre)
     
     return render_template('home.html', mascotas=mascotas)
 
@@ -151,6 +151,39 @@ def logout():
     session.pop('username', None)
     session.pop('vetId', None)
     return redirect(url_for('index'))
+
+
+@app.route('/graphs')
+def graphs():
+    if 'username' not in session:
+        return redirect(url_for('index'))
+
+    # Obtener datos para las gráficas
+    dictGraphs = {}
+
+
+    #Mascotas por especie
+    dictGraphs['graph1'] = obtener_mascotas_por_especie()
+
+    #Mascotas por raza
+    dictGraphs['graph2'] = obtener_mascotas_por_raza()
+
+    #Mascotas registradas por mes
+    dictGraphs['graph3'] = obtener_mascotas_por_mes()
+
+    # Distribución de edades
+    dictGraphs['graph4'] = obtener_mascotas_por_edad()
+
+    #Citas por día
+    dictGraphs['graph5'] = obtener_cita_por_dia()
+
+    #Citas por motivo
+    dictGraphs['graph6'] = obtener_cita_por_motivo()
+
+    print(dictGraphs)
+
+    return render_template('graphs.html', graphs=dictGraphs)
+
 
 
 if __name__ == '__main__':

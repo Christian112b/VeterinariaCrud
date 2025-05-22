@@ -1,0 +1,49 @@
+{% include 'components/sidebar.html' %}
+
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/graphsStyles.css') }}">
+<!-- Boostrap Library -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<!-- Plotly CDN -->
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+
+<div class="main-content">
+    <h1>Gráficos</h1>
+
+    <div class="container-fluid">
+        <div class="row mb-4">
+            <div class="col-4">
+                <h4>Mascotas por especie</h4>
+                <div id="grafico-especie" class="grafico-container"></div>
+            </div>
+            <div class="col-4">
+                <h4>Mascotas por raza</h4>
+                <div id="grafico-raza" class="grafico-container"></div>
+            </div>
+            <div class="col-4">
+                <h4>Mascotas registradas por mes</h4>
+                <div id="grafico-mascotas-mes" class="grafico-container"></div>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-4">
+                <h4>Distribución de edades de mascotas</h4>
+                <div id="grafico-edades" class="grafico-container"></div>
+            </div>
+            <div class="col-4">
+                <h4>Citas por día</h4>
+                <div id="grafico-citas-dia" class="grafico-container"></div>
+            </div>
+            <div class="col-4">
+                <h4>Citas por motivo</h4>
+                <div id="grafico-citas-motivo" class="grafico-container"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="graphs-data" style="display:none;">{{ graphs|tojson }}</div>
+<script src="{{ url_for('static', filename='scripts/graphs.js') }}"></script>

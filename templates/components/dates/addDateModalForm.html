@@ -2,37 +2,50 @@
     <div class="modal fade" id="addDateModal" tabindex="-1" role="dialog" aria-labelledby="addDateModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
-                <div class="modal-header">
+                <div class="modal-header bg-primary text-white">
                     <h5 class="modal-title" id="addDateModalLabel">Agregar Nueva Cita</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <form method="POST" action="{{ url_for('register_date') }}">
                     <div class="modal-body">
                         <div class="form-group">
-                            <label for="idMascota">Nombre de la Mascota</label>
+                            <label for="idMascota">Nombre de la Mascota <span class="text-danger">*</span></label>
                             <select class="form-control" id="idMascota" name="idMascota" required>
                                 <option value="">Selecciona una mascota</option>
                                 {% for mascota in mascotas %}
-                                    <option value="{{ mascota[0] }}">{{ mascota[0] }} - {{ mascota[1] }}</option>
+                                    <option value="{{ mascota[0] }}">{{ mascota[1] }}</option>
                                 {% endfor %}
                             </select>
                         </div>
-                        <div class="form-group">
-                            <label for="fechaCita">Fecha</label>
-                            <input type="date" class="form-control" id="fechaCita" name="fechaCita" required>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="fechaCita">Fecha <span class="text-danger">*</span></label>
+                                <input type="date" class="form-control" id="fechaCita" name="fechaCita" required>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="horaCita">Hora <span class="text-danger">*</span></label>
+                                <input type="time" class="form-control" id="horaCita" name="horaCita" required>
+                            </div>
                         </div>
                         <div class="form-group">
-                            <label for="horaCita">Hora</label>
-                            <input type="time" class="form-control" id="horaCita" name="horaCita" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="motivoCita">Motivo</label>
-                            <input type="text" class="form-control" id="motivoCita" name="motivoCita" required>
+                            <label for="motivoCita">Motivo <span class="text-danger">*</span></label>
+                            <select class="form-control" id="motivoCita" name="motivoCita" required onchange="mostrarOtroMotivo(this)">
+                                <option value="" disabled selected>Selecciona un motivo</option>
+                                <option value="Revision General">Revisión General</option>
+                                <option value="Vacunación">Vacunación</option>
+                                <option value="Desparasitación">Desparasitación</option>
+                                <option value="Cirugía">Cirugía</option>
+                                <option value="Servicio Estetico">Servicio Estético</option>
+                                <option value="Emergencia">Emergencia</option>
+                                <option value="Otro">Otro</option>
+                            </select>
+                            <input type="text" class="form-control mt-2" id="otroMotivoCita" name="otroMotivoCita" maxlength="50" placeholder="Especifica el motivo" style="display:none;">
                         </div>
                     </div>
                     <div class="modal-footer">
+                        <small class="text-muted mr-auto"><span class="text-danger">*</span> Campos obligatorios</small>
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
                         <button type="submit" class="btn btn-primary">Agregar Cita</button>
                     </div>
@@ -41,3 +54,15 @@
         </div>
     </div>
 </div>
+<script>
+function mostrarOtroMotivo(select) {
+    var input = document.getElementById('otroMotivoCita');
+    if (select.value === 'Otro') {
+        input.style.display = 'block';
+        input.required = true;
+    } else {
+        input.style.display = 'none';
+        input.required = false;
+    }
+}
+</script>

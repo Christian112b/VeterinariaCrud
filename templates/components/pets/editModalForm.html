@@ -3,32 +3,62 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <form id="editPetForm" method="POST">
-        <div class="modal-header">
+        <div class="modal-header bg-primary text-white">
           <h5 class="modal-title" id="editPetModalLabel">Editar Mascota</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+          <button type="button" class="close text-white" data-dismiss="modal" aria-label="Cerrar">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
         <div class="modal-body">
           <input type="hidden" id="editPetId" name="id">
-          <div class="form-group">
-            <label for="editPetNombre">Nombre</label>
-            <input type="text" class="form-control" id="editPetNombre" name="nombre" required>
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <label for="editPetNombre">Nombre <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" id="editPetNombre" name="nombre" required maxlength="30" placeholder="Ej: Max">
+            </div>
+            <div class="form-group col-md-6">
+              <label for="editPetEspecie">Especie <span class="text-danger">*</span></label>
+              <select class="form-control" id="editPetEspecie" name="especie" required>
+                <option value="" disabled>Selecciona una especie</option>
+                <option value="Perro">Perro</option>
+                <option value="Gato">Gato</option>
+                <option value="Ave">Ave</option>
+                <option value="Conejo">Conejo</option>
+                <option value="Hamster">Hamster</option>
+                <option value="Tortuga">Tortuga</option>
+                <option value="Otro">Otro</option>
+              </select>
+            </div>
           </div>
-          <div class="form-group">
-            <label for="editPetEspecie">Especie</label>
-            <input type="text" class="form-control" id="editPetEspecie" name="especie" required>
-          </div>
-          <div class="form-group">
-            <label for="editPetRaza">Raza</label>
-            <input type="text" class="form-control" id="editPetRaza" name="raza" required>
-          </div>
-          <div class="form-group">
-            <label for="editPetEdad">Edad</label>
-            <input type="number" class="form-control" id="editPetEdad" name="edad" required>
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <label for="editPetRaza">Raza</label>
+              <input type="text" class="form-control" id="editPetRaza" name="raza" maxlength="30" placeholder="Ej: Labrador">
+            </div>
+            <div class="form-group col-md-3">
+              <label for="editPetEdad">Edad</label>
+              <input type="number" class="form-control" id="editPetEdad" name="edad" min="0" max="50" placeholder="Años">
+            </div>
+            <div class="form-group col-md-3">
+              <label for="editPetColor">Color <span class="text-danger">*</span></label>
+              <select class="form-control" id="editPetColor" name="color" required onchange="mostrarOtroColorEdit(this)">
+                <option value="" disabled>Selecciona un color</option>
+                <option value="Blanco">Blanco</option>
+                <option value="Negro">Negro</option>
+                <option value="Marrón">Marrón</option>
+                <option value="Gris">Gris</option>
+                <option value="Dorado">Dorado</option>
+                <option value="Beige">Beige</option>
+                <option value="Naranja">Naranja</option>
+                <option value="Manchado">Manchado</option>
+                <option value="Otro">Otro</option>
+              </select>
+              <input type="text" class="form-control mt-2" id="editOtroColorMascota" name="otroColor" maxlength="20" placeholder="Especifica el color" style="display:none;">
+            </div>
           </div>
         </div>
         <div class="modal-footer">
+          <small class="text-muted mr-auto"><span class="text-danger">*</span> Campos obligatorios</small>
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
           <button type="submit" class="btn btn-primary">Guardar Cambios</button>
         </div>
@@ -36,3 +66,15 @@
     </div>
   </div>
 </div>
+<script>
+function mostrarOtroColorEdit(select) {
+  var input = document.getElementById('editOtroColorMascota');
+  if (select.value === 'Otro') {
+    input.style.display = 'block';
+    input.required = true;
+  } else {
+    input.style.display = 'none';
+    input.required = false;
+  }
+}
+</script>

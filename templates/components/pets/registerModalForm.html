@@ -2,36 +2,62 @@
     <div class="modal fade" id="registerModal" tabindex="-1" role="dialog" aria-labelledby="registerModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
-                <div class="modal-header">
+                <div class="modal-header bg-primary text-white">
                     <h5 class="modal-title" id="registerModalLabel">Registrar Nueva Mascota</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-		        <form method="POST" action="{{ url_for('register_pet') }}">
+                <form method="POST" action="{{ url_for('register_pet') }}">
                     <div class="modal-body">
-                        <div class="form-group">
-                            <label for="nombreMascota">Nombre de la Mascota</label>
-                            <input type="text" class="form-control" id="nombreMascota" name="nombreMascota" required>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="nombreMascota">Nombre <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="nombreMascota" name="nombreMascota" required maxlength="30" placeholder="Ej: Max">
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="especieMascota">Especie <span class="text-danger">*</span></label>
+                                <select class="form-control" id="especieMascota" name="especieMascota" required>
+                                    <option value="" disabled selected>Selecciona una especie</option>
+                                    <option value="Perro">Perro</option>
+                                    <option value="Gato">Gato</option>
+                                    <option value="Ave">Ave</option>
+                                    <option value="Conejo">Conejo</option>
+                                    <option value="Hamster">Hamster</option>
+                                    <option value="Tortuga">Tortuga</option>
+                                    <option value="Otro">Otro</option>
+                                </select>
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label for="especieMascota">Especie</label>
-                            <input type="text" class="form-control" id="especieMascota" name="especieMascota" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="razaMascota">Raza</label>
-                            <input type="text" class="form-control" id="razaMascota" name="razaMascota">
-                        </div>
-                        <div class="form-group">
-                            <label for="edadMascota">Edad</label>
-                            <input type="number" class="form-control" id="edadMascota" name="edadMascota" min="0">
-                        </div>
-                        <div class="form-group">
-                            <label for="propietarioMascota">Color</label>
-                            <input type="text" class="form-control" id="colorMascota" name="colorMascota" required>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="razaMascota">Raza</label>
+                                <input type="text" class="form-control" id="razaMascota" name="razaMascota" maxlength="30" placeholder="Ej: Labrador">
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label for="edadMascota">Edad</label>
+                                <input type="number" class="form-control" id="edadMascota" name="edadMascota" min="0" max="50" placeholder="Años">
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label for="colorMascota">Color <span class="text-danger">*</span></label>
+                                <select class="form-control" id="colorMascota" name="colorMascota" required onchange="mostrarOtroColor(this)">
+                                    <option value="" disabled selected>Selecciona un color</option>
+                                    <option value="Blanco">Blanco</option>
+                                    <option value="Negro">Negro</option>
+                                    <option value="Marrón">Marrón</option>
+                                    <option value="Gris">Gris</option>
+                                    <option value="Dorado">Dorado</option>
+                                    <option value="Beige">Beige</option>
+                                    <option value="Naranja">Naranja</option>
+                                    <option value="Manchado">Manchado</option>
+                                    <option value="Otro">Otro</option>
+                                </select>
+                                <input type="text" class="form-control mt-2" id="otroColorMascota" name="otroColorMascota" maxlength="20" placeholder="Especifica el color" style="display:none;">
+                            </div>
                         </div>
                     </div>
                     <div class="modal-footer">
+                        <small class="text-muted mr-auto"><span class="text-danger">*</span> Campos obligatorios</small>
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
                         <button type="submit" class="btn btn-success">Registrar</button>
                     </div>
@@ -40,3 +66,15 @@
         </div>
     </div>
 </div>
+<script>
+function mostrarOtroColor(select) {
+    var input = document.getElementById('otroColorMascota');
+    if (select.value === 'Otro') {
+        input.style.display = 'block';
+        input.required = true;
+    } else {
+        input.style.display = 'none';
+        input.required = false;
+    }
+}
+</script>
