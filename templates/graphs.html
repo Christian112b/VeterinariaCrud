@@ -1,3 +1,9 @@
+{% extends 'base.html' %}
+
+{% block title %}Graficos | Veterinaria{% endblock %}
+
+{% block content %}
+
 {% include 'components/sidebar.html' %}
 
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/graphsStyles.css') }}">
@@ -47,3 +53,5 @@
 
 <div id="graphs-data" style="display:none;">{{ graphs|tojson }}</div>
 <script src="{{ url_for('static', filename='scripts/graphs.js') }}"></script>
+
+{% endblock %}
